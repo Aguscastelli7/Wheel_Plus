@@ -133,7 +133,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-st.markdown('<div class="title">Wheel+🛞</div>', unsafe_allow_html=True)
+st.markdown('<div class="title">Wheel+</div>', unsafe_allow_html=True)
 st.markdown('<div class="subtitle">Revisa la condición de tus neumáticos en cuestión de segundos</div>', unsafe_allow_html=True)
 st.markdown('<div class="description">La seguridad es lo primero. Con Wheel+, carga una foto de tus neumáticos y obtén un análisis instantáneo de su estado. Nuestra aplicación te dirá si tus neumáticos están en condiciones seguras para circular o si necesitan ser reemplazados.</div>', unsafe_allow_html=True)
 
