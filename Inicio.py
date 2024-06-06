@@ -3,6 +3,8 @@ from PIL import Image, ImageOps  # Install pillow instead of PIL
 import numpy as np
 import streamlit as st 
 import os
+import pandas as pd
+from datetime import datetime
 
 # Get the absolute path to the directory containing the script
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -49,6 +51,22 @@ def classify_tire(img):
     confidence_score = prediction[0][index]
 
     return class_name, confidence_score
+
+# Save the prediction result
+def save_prediction(image_name, label, confidence_score):
+    # Path to the CSV file
+    csv_path = os.path.join(script_dir, "historial_predicciones.csv")
+    
+    # Create the DataFrame
+    df = pd.DataFrame([[datetime.now(), image_name, label, confidence_score]], columns=["Fecha", "Imagen", "Condicion", "Confianza"])
+    
+    # Check if the CSV file already exists
+    if not os.path.isfile(csv_path):
+        # Save the DataFrame as a new CSV file
+        df.to_csv(csv_path, index=False)
+    else:
+        # Append the DataFrame to the existing CSV file
+        df.to_csv(csv_path, mode='a', header=False, index=False)
 
 # Streamlit App
 
@@ -186,6 +204,10 @@ if input_img is not None:
                 label2 = label_description  # Guarda la descripción en label2
 
                 st.success(label2)  # Muestra la etiqueta sin el número
+
+                # Save the prediction to the CSV file
+                save_prediction(input_img.name, label2, confidence_score)
+                
             st.markdown('</div>', unsafe_allow_html=True)
 
         with col3:
@@ -207,3 +229,15 @@ st.markdown("""
         </div>
     </div>
     """, unsafe_allow_html=True)
+
+# History section
+st.markdown('<div class="subtitle">Historial de Condiciones de Neumáticos</div>', unsafe_allow_html=True)
+
+# Path to the CSV file
+csv_path = os.path.join(script_dir, "historial_predicciones.csv")
+
+if os.path.isfile(csv_path):
+    historial_df = pd.read_csv(csv_path)
+    st.dataframe(historial_df)
+else:
+    st.info("No hay historial de predicciones aún.")

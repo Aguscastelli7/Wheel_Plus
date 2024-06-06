@@ -1,2 +1,2 @@
-0 Buenas condiciones
-1 Malas condiciones
+0 Malas condiciones
+1 Buenas condiciones
