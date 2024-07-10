@@ -5,67 +5,47 @@ import streamlit as st
 import os
 import pandas as pd
 from datetime import datetime
+import webbrowser
 
 # Get the absolute path to the directory containing the script
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
-# List all files in the directory containing the script
-directory_files = os.listdir(script_dir)
-# st.text("Files in directory: " + ", ".join(directory_files))
-
+# Function to classify the tire condition
 def classify_tire(img):
-    # Disable scientific notation for clarity
     np.set_printoptions(suppress=True)
-
-    # Load the model
     model_path = os.path.join(script_dir, "modelo_IA", "keras_model.h5")
     model = load_model(model_path, compile=False)
-
-    # Load the labels
     labels_path = os.path.join(script_dir, "modelo_IA", "labels.txt")
     class_names = open(labels_path, "r").readlines()
-
-    # Create the array of the right shape to feed into the keras model
     data = np.ndarray(shape=(1, 224, 224, 3), dtype=np.float32)
-
-    # Replace this with the path to your image
     image = img.convert("RGB")
-
-    # Resizing the image to be at least 224x224 and then cropping from the center
     size = (224, 224)
     image = ImageOps.fit(image, size, Image.Resampling.LANCZOS)
-
-    # Turn the image into a numpy array
     image_array = np.asarray(image)
-
-    # Normalize the image
     normalized_image_array = (image_array.astype(np.float32) / 127.5) - 1
-
-    # Load the image into the array
     data[0] = normalized_image_array
-
-    # Predicts the model
     prediction = model.predict(data)
     index = np.argmax(prediction)
     class_name = class_names[index]
     confidence_score = prediction[0][index]
-
     return class_name, confidence_score
 
-# Save the prediction result
+# Function to save the prediction result
 def save_prediction(image_name, label, confidence_score):
-    # Path to the CSV file
     csv_path = os.path.join(script_dir, "historial_predicciones.csv")
-    
-    # Create the DataFrame
     df = pd.DataFrame([[datetime.now(), image_name, label, confidence_score]], columns=["Fecha", "Imagen", "Condicion", "Confianza"])
-    
-    # Check if the CSV file already exists
     if not os.path.isfile(csv_path):
-        # Save the DataFrame as a new CSV file
         df.to_csv(csv_path, index=False)
     else:
-        # Append the DataFrame to the existing CSV file
+        df.to_csv(csv_path, mode='a', header=False, index=False)
+
+# Function to save the maintenance date
+def save_maintenance_date(date):
+    csv_path = os.path.join(script_dir, "mantenimiento.csv")
+    df = pd.DataFrame([[datetime.now(), date]], columns=["Fecha de Registro", "Fecha de Mantenimiento"])
+    if not os.path.isfile(csv_path):
+        df.to_csv(csv_path, index=False)
+    else:
         df.to_csv(csv_path, mode='a', header=False, index=False)
 
 # Streamlit App
@@ -78,7 +58,7 @@ st.markdown("""
     }
     h2{
         color:#ffffff;
-        }
+    }
     .main {
         background-color: #757975;  
     }
@@ -94,10 +74,11 @@ st.markdown("""
         color: #000000;
     }
     .subtitle {
-        font-size: 30px;
+        font-size: 35px;
         text-align: center;
         font-weight: bold;
         color: #ECC52C;
+        margin-top: 20px;
     }
     .description {
         font-size: 20px;
@@ -106,8 +87,8 @@ st.markdown("""
         padding-bottom: 30px;
     }
     .feature-container {
-        display: flex;
-        justify-content: space-around;
+        display: flex; 
+        justify-content: space-around; 
         width: 100%;
         margin: 0 auto;
     }
@@ -150,13 +131,23 @@ st.markdown("""
         display: flex;
         justify-content: center;
     }
+    .center-video {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+    .center-button {
+        display: flex;
+        justify-content: center;
+        padding: 10px;
+    }
     </style>
     """, unsafe_allow_html=True)
 
 # Center the logo image using Streamlit's container
 with st.container():
     st.markdown('<div class="center-logo">', unsafe_allow_html=True)
-    st.image('logo.png', caption=None, width=300, use_column_width=None, clamp=False, channels="RGB", output_format="auto")
+    st.image('logo1.png', caption=None, use_column_width=None, clamp=False, channels="RGB", output_format="auto")
     st.markdown('</div>', unsafe_allow_html=True)
 
 st.markdown('<div class="subtitle">Revisa la condición de tus neumáticos en cuestión de segundos</div>', unsafe_allow_html=True)
@@ -181,8 +172,8 @@ st.markdown('<div class="description">A continuación carga una imagen de tu neu
 input_img = st.file_uploader("Elegir imagen", type=['jpg', 'png', 'jpeg'])
 
 if input_img is not None:
+    st.markdown('<div class="center-button">', unsafe_allow_html=True)
     if st.button("Determinar estado del neumático"):
-        
         col1, col2, col3 = st.columns([1,1,1])
 
         with col1:
@@ -216,6 +207,23 @@ if input_img is not None:
             st.success(f"{confidence_score * 100:.2f}%")
             st.markdown('</div>', unsafe_allow_html=True)
 
+        st.markdown('</div>', unsafe_allow_html=True)
+
+
+# Mostrar mapa con gomerías cercanas
+st.markdown('<div class="subtitle">Gomerías Cercanas</div>', unsafe_allow_html=True)
+
+with st.expander("Busca las gomerías Cercanas 🗺️"):
+    user_location = st.text_input("Ingrese su dirección:")
+
+if user_location:
+    st.write(f"Ubicación ingresada: {user_location}")
+    st.markdown('<div class="center-button">', unsafe_allow_html=True)
+if st.button("Ver gomerías cercanas en Google Maps"):
+    google_maps_url = f"https://www.google.com/maps/search/?api=1&query=gomerias+cercanas+{user_location}"
+    webbrowser.open_new_tab(google_maps_url)
+    st.markdown('</div>', unsafe_allow_html=True)
+
 # Testimonials section
 st.markdown("""
     <div class="feature-container">
@@ -230,14 +238,47 @@ st.markdown("""
     </div>
     """, unsafe_allow_html=True)
 
-# History section
-st.markdown('<div class="subtitle">Historial de Condiciones de Neumáticos</div>', unsafe_allow_html=True)
+# Sección de Tutoriales en Video
+st.markdown('<div class="subtitle">Tutoriales en Video</div>', unsafe_allow_html=True)
+st.markdown("""
+    <div class="description">
+        Nos enorgullece colaborar con Bridgestone, una marca de alta confianza en el mundo de los neumáticos. 
+        En los siguientes videos, los expertos de Bridgestone te mostrarán cómo realizar varias tareas de 
+        mantenimiento y cambio de neumáticos.
+    </div>
+    """, unsafe_allow_html=True)
 
-# Path to the CSV file
-csv_path = os.path.join(script_dir, "historial_predicciones.csv")
+with st.container():
+    st.markdown('<div class="center-logo">', unsafe_allow_html=True)
+    st.image('brigestone.png', caption=None, use_column_width=None, clamp=False, channels="RGB", output_format="auto")
+    st.markdown('</div>', unsafe_allow_html=True)
 
-if os.path.isfile(csv_path):
-    historial_df = pd.read_csv(csv_path)
-    st.dataframe(historial_df)
-else:
-    st.info("No hay historial de predicciones aún.")
+# Lista de videos tutoriales
+videos_tutoriales = [
+    {"titulo": "Cómo cambiar una rueda", "url": "https://www.youtube.com/embed/M1gVuAmXNVI"},
+    {"titulo": "Cómo conocer la presión adecuada para mis llantas", "url": "https://www.youtube.com/embed/7IJkSZjSfLs"},
+    {"titulo": "Cuáles son los cuidados básicos de mi llanta", "url": "https://www.youtube.com/embed/qFrWymyBxZg"}
+]
+
+# Mostrar los videos en la aplicación
+for video in videos_tutoriales:
+    st.markdown(f"### {video['titulo']}")
+    st.markdown(f'<div class="center-video"><iframe width="480" height="270" src="{video["url"]}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>', unsafe_allow_html=True)
+
+# Calendario de Mantenimiento
+st.markdown('<div class="subtitle">Calendario de Mantenimiento</div>', unsafe_allow_html=True)
+st.markdown("""
+    <div class="description">
+        Planifica el mantenimiento de tus neumáticos para asegurarte de que siempre estén en óptimas condiciones.
+        Selecciona una fecha para tu próximo mantenimiento.
+    </div>
+    """, unsafe_allow_html=True)
+
+maintenance_date = st.date_input("Selecciona una fecha para el mantenimiento", datetime.now())
+
+st.markdown('<div class="center-button">', unsafe_allow_html=True)
+if st.button("Guardar fecha de mantenimiento"):
+    save_maintenance_date(maintenance_date)
+    st.success(f"Fecha de mantenimiento guardada: {maintenance_date}")
+    st.info("Tu fecha se ha guardado automáticamente en el calendario de tu teléfono.")
+st.markdown('</div>', unsafe_allow_html=True)
