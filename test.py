@@ -238,33 +238,6 @@ st.markdown("""
     </div>
     """, unsafe_allow_html=True)
 
-# Sección de Tutoriales en Video
-st.markdown('<div class="subtitle">Tutoriales en Video</div>', unsafe_allow_html=True)
-st.markdown("""
-    <div class="description">
-        Nos enorgullece colaborar con Bridgestone, una marca de alta confianza en el mundo de los neumáticos. 
-        En los siguientes videos, los expertos de Bridgestone te mostrarán cómo realizar varias tareas de 
-        mantenimiento y cambio de neumáticos.
-    </div>
-    """, unsafe_allow_html=True)
-
-with st.container():
-    st.markdown('<div class="center-logo">', unsafe_allow_html=True)
-    st.image('brigestone.png', caption=None, use_column_width=None, clamp=False, channels="RGB", output_format="auto")
-    st.markdown('</div>', unsafe_allow_html=True)
-
-# Lista de videos tutoriales
-videos_tutoriales = [
-    {"titulo": "Cómo cambiar una rueda", "url": "https://www.youtube.com/embed/M1gVuAmXNVI"},
-    {"titulo": "Cómo conocer la presión adecuada para mis llantas", "url": "https://www.youtube.com/embed/7IJkSZjSfLs"},
-    {"titulo": "Cuáles son los cuidados básicos de mi llanta", "url": "https://www.youtube.com/embed/qFrWymyBxZg"}
-]
-
-# Mostrar los videos en la aplicación
-for video in videos_tutoriales:
-    st.markdown(f"### {video['titulo']}")
-    st.markdown(f'<div class="center-video"><iframe width="480" height="270" src="{video["url"]}" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>', unsafe_allow_html=True)
-
 # Calendario de Mantenimiento
 st.markdown('<div class="subtitle">Calendario de Mantenimiento</div>', unsafe_allow_html=True)
 st.markdown("""
