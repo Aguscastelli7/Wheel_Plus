@@ -99,6 +99,10 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
+with st.container():
+    st.markdown('<div class="center-logo">', unsafe_allow_html=True)
+    st.image('brigestone.png', caption=None, use_column_width=None, clamp=False, channels="RGB", output_format="auto")
+    st.markdown('</div>', unsafe_allow_html=True)
 
 st.markdown('<div class="subtitle">Tutoriales en Video</div>', unsafe_allow_html=True)
 st.markdown("""
@@ -109,10 +113,6 @@ st.markdown("""
     </div>
     """, unsafe_allow_html=True)
 
-with st.container():
-    st.markdown('<div class="center-logo">', unsafe_allow_html=True)
-    st.image('brigestone.png', caption=None, use_column_width=None, clamp=False, channels="RGB", output_format="auto")
-    st.markdown('</div>', unsafe_allow_html=True)
     
 # Lista de videos tutoriales
 videos_tutoriales = [
