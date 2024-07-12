@@ -82,14 +82,14 @@ mechanics = [
     },
     {
         "name": "María López",
-        "description": "Experta en reparaciones rápidas y eficientes. Servicio a domicilio garantizado.",
-        "rating": "⭐⭐⭐⭐",
+        "description": "Experta en reparaciones rápidas y eficientes. Servicio a domicilio.",
+        "rating": "⭐⭐⭐⭐⭐",
         "phone": "+123 456 7891"
     },
     {
         "name": "Carlos Sánchez",
         "description": "Técnico de neumáticos con más de 15 años de experiencia en el campo.",
-        "rating": "⭐⭐⭐⭐⭐",
+        "rating": "⭐⭐⭐⭐",
         "phone": "+123 456 7892"
     },
     {
@@ -107,7 +107,7 @@ mechanics = [
     {
         "name": "Ana Fernández",
         "description": "Calidad y confianza en cada servicio, a tu puerta.",
-        "rating": "⭐⭐⭐⭐",
+        "rating": "⭐⭐⭐⭐⭐",
         "phone": "+123 456 7895"
     }
 ]
